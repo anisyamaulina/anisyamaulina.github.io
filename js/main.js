@@ -100,7 +100,7 @@ $(document).ready(function () {
         console.log('Notification permission status : ' , status);
     });
 
-    function displayNaotification(){
+    function displayNotification(){
         if (Notification.permission === 'granted'){
             navigator.serviceWorker.getRegistration()
             .then(function (reg){
