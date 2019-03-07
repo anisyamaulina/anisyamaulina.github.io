@@ -99,6 +99,31 @@ $(document).ready(function () {
     Notification.requestPermission(function (status){
         console.log('Notification permission status : ' , status);
     });
+
+    function displayNaotification(){
+        if (Notification.permission === 'granted'){
+            navigator.serviceWorker.getRegistration()
+            .then(function (reg){
+                var option = {
+                    body : 'Ini body notifikasi',
+                    icon : 'image/ugm.png',
+                    vibrate : [100,50,100],
+                    data : {
+                        dateOfArrival : Date.now(),
+                        primaryKey : 1
+                    },
+                    actions: [
+                        {action : 'explore', title : 'Kunjungi situs'},
+                        {action : 'close', title : 'Tutup'}
+                    ]
+                }
+                reg.showNotification('Judul Notifikasi',options);
+            })
+        }
+    }
+    $('#btn-notification').on('click', function(){
+        displayNaotification();
+    });
 });
 
 
