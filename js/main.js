@@ -96,6 +96,9 @@ $(document).ready(function () {
             $('#mhs-list').html(result);
         });
     }
+    Notification.requestPermission(function (status){
+        console.log('Notification permission status : ' , status);
+    });
 });
 
 
