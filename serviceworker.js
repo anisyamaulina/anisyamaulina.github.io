@@ -6,7 +6,7 @@ var urlToCache = [
     '/css/bootstrap.min.css',
     '/js/jquery.min.js',
     '/js/main.js',
-    '/images/ugm-png-6.png'
+    '/images/ugm.png'
 ];
 
 self.addEventListener('install', function(event) {
