@@ -104,7 +104,7 @@ $(document).ready(function () {
         if (Notification.permission === 'granted'){
             navigator.serviceWorker.getRegistration()
             .then(function (reg){
-                var option = {
+                var options = {
                     body : 'Ini body notifikasi',
                     icon : 'image/ugm.png',
                     vibrate : [100,50,100],
