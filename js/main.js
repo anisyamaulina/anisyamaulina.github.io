@@ -1,63 +1,41 @@
 $(document).ready(function () {
-    // API
-    var _url = 'https://my-json-server.typicode.com/techtona/latihan_pwa_api/mahasiswa';
-    // var _url = 'http://localhost/b2/index.php';
-
-    // menampung data yang didapat dari API
+    // var _url = 'php/index.php';
+    var _url = 'https://my-json-server.typicode.com/monsterup/api_pwa/mahasiswa';
     var result = '';
-
-    // menampung gender sbg option
     var gender_opt = '';
+    var gender  = [];
 
-    // menampung semua gender dari API
-    var gender = [];
+    // $.get(_url,function (data) {
+    function renderPage(data) {
+        $.each (data,function (key, items) {
+            gend = items.gender;
 
-    //$.get(_url,function (data) {
-        function renderPage(data){
-        $.each(data, function (key, items) {
-            // untuk menampung gender sementara pd loop
-            _gend = items.gender;
-
-            // untuk memasukkan data ke result dari API
             result += '<div>'+'<p><b>'+items.name+'</b></p>'+
-                '<p>'+_gend+'</p></div>';
-
-            // jika gender tidak ada didalam array gender,
-            // maka masukkan gender opt
-            if ($.inArray(_gend, gender) === -1){
-                // data gender di push untuk
-                // pengecekan itrasi berikutnya
-                gender.push(_gend);
-                // set gender_opt dgn <option>
-                gender_opt += '<option value="'+_gend+
-                    '">'+_gend+'</option>'
+            '<p>'+gend+'</p>'+'</div>';
+            
+            if($.inArray(gend,gender) === -1){
+                gender.push(gend);
+                gender_opt += '<option value="'+gend+'">'+gend+'</option>'
             }
+
         });
 
-        // menggunakan selector ID mhs-list,
-        // kemudian replace html di dalam komponen yang
-        // ada di id mhs-list menjadi result
         $('#mhs-list').html(result);
 
-        // menggunakan selector ID gender-select,
-        // kemudian replace html di dalam komponen yang
-        // ada di id gender-select menjadi gender_opt
-        $('#gender-select').html('<option value="semua">semua</option>'+gender_opt);
-    // });
+        $('#gender-select').html('<option value="Semua">Semua</option>'+gender_opt);
     }
+    // });
 
     var networkDataReceive = false;
-    /* cek di Cache, apakah udah ada apa belum, ngambil data dari service online */
     var networkUpdate = fetch(_url).then(function(response){
         return response.json();
     }).then(function(data){
         networkDataReceive = true;
-        renderPage(data)
+        renderPage(data);
     });
 
-    /* FETCH DATA DARI CACHE */
-    caches.match('_url').then(function(response){
-        if (!response) throw Error("no data on cache");
+    caches.match(_url).then(function(response){
+        if(!response) throw Error("no data on cache");
         return response.json();
     }).then(function(data){
         if(!networkDataReceive){
@@ -66,68 +44,70 @@ $(document).ready(function () {
         }
     }).catch(function(){
         return networkUpdate;
-    })
+    });
 
-    // filter untuk option gender
-    $('#gender-select').on('change', function () {
+    $('#gender-select').on('change', function(){
         updateList($(this).val());
     });
 
-    function updateList(opt) {
+    function updateList(opt){
         var _url2 = _url;
 
-        if (opt !== 'semua'){
-            _url2 = _url + '?gender='+opt;
+        if(opt !== 'Semua'){
+            _url2 = _url + '?gender=' + opt;
+        } else {
+            _url2 = "https://my-json-server.typicode.com/monsterup/api_pwa/mahasiswa";
         }
-        // menampung data yang didapat dari API
+
         var result = '';
 
         $.get(_url2,function (data) {
-            $.each(data, function (key, items) {
-                // untuk menampung gender sementara pd loop
-                _gend = items.gender;
+            $.each (data,function (key, items) {
 
-                // untuk memasukkan data ke result dari API
+                gend = items.gender;
+
                 result += '<div>'+'<p><b>'+items.name+'</b></p>'+
-                    '<p>'+_gend+'</p></div>';
+                '<p>'+gend+'</p>'+'</div>';
+
             });
 
-            // update list
             $('#mhs-list').html(result);
         });
     }
-    Notification.requestPermission(function (status){
-        console.log('Notification permission status : ' , status);
+
+    Notification.requestPermission(function(status){
+        console.log('Notification permission status : ', status);
     });
 
     function displayNotification(){
-        if (Notification.permission === 'granted'){
-            navigator.serviceWorker.getRegistration()
-            .then(function (reg){
+        if(Notification.permission === 'granted'){
+            navigator.serviceWorker.getRegistration().then(function(reg){
                 var options = {
                     body : 'Ini body notifikasi',
-                    icon : 'image/ugm.png',
+                    icon : 'images/ugm-png-6.png',
                     vibrate : [100,50,100],
                     data : {
                         dateOfArrival : Date.now(),
                         primaryKey : 1
                     },
-                    actions: [
-                        {action : 'explore', title : 'Kunjungi situs'},
+                    actions : [
+                        {action : 'explore', title : 'Kunjungi Situs'},
                         {action : 'close', title : 'Tutup'}
                     ]
                 }
-                reg.showNotification('Judul Notifikasi',options);
+                reg.showNotification('Judul Notifikasi', options);
             })
         }
     }
+
     $('#btn-notification').on('click', function(){
-        displayNaotification();
-    });
+        displayNotification();
+    })
+
 });
 
 
-if ('serviceWorker' in navigator){
+if (navigator.serviceWorker){
     window.addEventListener('load', function () {
         navigator.serviceWorker.register('/serviceworker.js').then(function (reg) {
             console.log('SW regis sukses dgn skop',reg.scope)
